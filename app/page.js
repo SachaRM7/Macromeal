@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { db } from "./firebase";
+import { doc, setDoc, onSnapshot } from "firebase/firestore";
 
 // ─── DATA ────────────────────────────────────────────────────────────────────
 
@@ -124,22 +126,24 @@ function formatQty(food, grams) {
   return `${Math.round(grams)}g`;
 }
 
-// ─── STORAGE (localStorage) ──────────────────────────────────────────────────
+// ─── FIRESTORE SYNC ──────────────────────────────────────────────────────────
 
-function loadData(key, fallback) {
+const PROFILES_DOC = doc(db, "macromeal", "profiles");
+const RECIPE_DOC = doc(db, "macromeal", "recipe");
+
+async function saveProfiles(profiles) {
   try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
+    await setDoc(PROFILES_DOC, { data: JSON.stringify(profiles) });
+  } catch (e) {
+    console.error("Firebase save error (profiles):", e);
   }
 }
 
-function saveData(key, value) {
+async function saveRecipe(recipe) {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
+    await setDoc(RECIPE_DOC, { data: JSON.stringify(recipe) });
   } catch (e) {
-    console.error("Save error:", e);
+    console.error("Firebase save error (recipe):", e);
   }
 }
 
@@ -148,6 +152,8 @@ function saveData(key, value) {
 function ProfileCard({ profile, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(!profile.name);
   const [form, setForm] = useState(profile);
+
+  useEffect(() => { setForm(profile); }, [profile]);
 
   const bmr = calcBMR(form.sex, form.weight, form.height, form.age);
   const tdeeBase = Math.round(bmr * form.activity);
@@ -168,30 +174,16 @@ function ProfileCard({ profile, onUpdate, onDelete }) {
       <div style={styles.card}>
         <div style={styles.cardHeader}>
           <span style={styles.cardIcon}>{form.sex === "M" ? "👨" : "👩"}</span>
-          <input
-            style={styles.nameInput}
-            value={form.name}
-            onChange={(e) => set("name", e.target.value)}
-            placeholder="Prénom"
-          />
+          <input style={styles.nameInput} value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Prénom" />
         </div>
-
         <div style={styles.formGrid}>
           <div style={styles.toggleRow}>
             {["M", "F"].map((s) => (
-              <button
-                key={s}
-                style={{
-                  ...styles.toggleBtn,
-                  ...(form.sex === s ? styles.toggleActive : {}),
-                }}
-                onClick={() => set("sex", s)}
-              >
+              <button key={s} style={{ ...styles.toggleBtn, ...(form.sex === s ? styles.toggleActive : {}) }} onClick={() => set("sex", s)}>
                 {s === "M" ? "♂ Homme" : "♀ Femme"}
               </button>
             ))}
           </div>
-
           <div style={styles.inputRow}>
             <label style={styles.label}>Âge</label>
             <input type="number" style={styles.input} value={form.age} onChange={(e) => set("age", +e.target.value)} />
@@ -207,53 +199,40 @@ function ProfileCard({ profile, onUpdate, onDelete }) {
             <input type="number" style={styles.input} value={form.weight} onChange={(e) => set("weight", +e.target.value)} step="0.1" />
             <span style={styles.unit}>kg</span>
           </div>
-
           <div style={{ marginTop: 8 }}>
             <label style={styles.label}>Activité physique</label>
             <div style={styles.selectWrap}>
               <select style={styles.select} value={form.activity} onChange={(e) => set("activity", +e.target.value)}>
-                {ACTIVITY_LEVELS.map((a) => (
-                  <option key={a.value} value={a.value}>{a.label} – {a.desc}</option>
-                ))}
+                {ACTIVITY_LEVELS.map((a) => (<option key={a.value} value={a.value}>{a.label} – {a.desc}</option>))}
               </select>
             </div>
           </div>
-
           <div style={{ marginTop: 8 }}>
             <label style={styles.label}>Objectif</label>
             <div style={styles.selectWrap}>
               <select style={styles.select} value={form.objective} onChange={(e) => set("objective", +e.target.value)}>
-                {OBJECTIVES.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label} ({o.desc})</option>
-                ))}
+                {OBJECTIVES.map((o) => (<option key={o.value} value={o.value}>{o.label} ({o.desc})</option>))}
               </select>
             </div>
           </div>
-
           <div style={{ marginTop: 8 }}>
             <label style={styles.label}>Répartition repas</label>
             <div style={styles.selectWrap}>
               <select style={styles.select} value={form.mealSplit} onChange={(e) => set("mealSplit", e.target.value)}>
-                {MEAL_SPLITS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
+                {MEAL_SPLITS.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
               </select>
             </div>
           </div>
         </div>
-
         <div style={styles.previewBox}>
           <div style={styles.previewTitle}>Apport journalier estimé</div>
-          <div style={styles.macroRow}>
-            <span style={styles.kcalBig}>{tdee} kcal</span>
-          </div>
+          <div style={styles.macroRow}><span style={styles.kcalBig}>{tdee} kcal</span></div>
           <div style={styles.macroRow}>
             <MacroPill label="P" value={macros.protein} color="#4ade80" suffix="g" />
             <MacroPill label="G" value={macros.fat} color="#facc15" suffix="g" />
             <MacroPill label="C" value={macros.carbs} color="#60a5fa" suffix="g" />
           </div>
         </div>
-
         <div style={{ display: "flex", gap: 8, marginTop: 12 }}>
           <button style={styles.btnPrimary} onClick={save}>✓ Enregistrer</button>
           {onDelete && <button style={styles.btnDanger} onClick={onDelete}>Supprimer</button>}
@@ -272,31 +251,22 @@ function ProfileCard({ profile, onUpdate, onDelete }) {
         <button style={styles.btnSmall} onClick={() => setEditing(true)}>✏️</button>
       </div>
       <div style={styles.statRow}>
-        <span>{form.age} ans</span>
-        <span>{form.height} cm</span>
-        <span>{form.weight} kg</span>
+        <span>{form.age} ans</span><span>{form.height} cm</span><span>{form.weight} kg</span>
       </div>
-      <div style={styles.macroRow}>
-        <span style={styles.kcalBig}>{tdee} kcal/j</span>
-      </div>
+      <div style={styles.macroRow}><span style={styles.kcalBig}>{tdee} kcal/j</span></div>
       <div style={styles.macroRow}>
         <MacroPill label="P" value={macros.protein} color="#4ade80" suffix="g" />
         <MacroPill label="G" value={macros.fat} color="#facc15" suffix="g" />
         <MacroPill label="C" value={macros.carbs} color="#60a5fa" suffix="g" />
       </div>
-      <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>
-        {objective.label} · {split.label}
-      </div>
+      <div style={{ fontSize: 12, color: "#9ca3af", marginTop: 4 }}>{objective.label} · {split.label}</div>
     </div>
   );
 }
 
 function MacroPill({ label, value, color, suffix = "" }) {
   return (
-    <span style={{
-      background: color + "22", color, padding: "3px 10px",
-      borderRadius: 20, fontSize: 13, fontWeight: 700, letterSpacing: 0.3,
-    }}>
+    <span style={{ background: color + "22", color, padding: "3px 10px", borderRadius: 20, fontSize: 13, fontWeight: 700, letterSpacing: 0.3 }}>
       {label} {value}{suffix}
     </span>
   );
@@ -305,29 +275,17 @@ function MacroPill({ label, value, color, suffix = "" }) {
 function IngredientPicker({ selected, onToggle }) {
   const [openCat, setOpenCat] = useState(null);
   const [search, setSearch] = useState("");
-
   const allFoods = Object.values(FOOD_DB).flat();
-  const filtered = search.trim()
-    ? allFoods.filter((f) => f.name.toLowerCase().includes(search.toLowerCase()))
-    : null;
+  const filtered = search.trim() ? allFoods.filter((f) => f.name.toLowerCase().includes(search.toLowerCase())) : null;
 
   return (
     <div>
-      <input
-        style={{ ...styles.input, width: "100%", marginBottom: 12, boxSizing: "border-box" }}
-        placeholder="🔍 Rechercher un ingrédient…"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
+      <input style={{ ...styles.input, width: "100%", marginBottom: 12, boxSizing: "border-box" }} placeholder="🔍 Rechercher un ingrédient…" value={search} onChange={(e) => setSearch(e.target.value)} />
       {filtered ? (
         <div style={styles.foodGrid}>
           {filtered.map((f) => {
             const active = selected.includes(f.id);
-            return (
-              <button key={f.id} style={{ ...styles.foodChip, ...(active ? styles.foodChipActive : {}) }} onClick={() => onToggle(f.id)}>
-                {active ? "✓ " : ""}{f.name}
-              </button>
-            );
+            return (<button key={f.id} style={{ ...styles.foodChip, ...(active ? styles.foodChipActive : {}) }} onClick={() => onToggle(f.id)}>{active ? "✓ " : ""}{f.name}</button>);
           })}
           {filtered.length === 0 && <div style={{ color: "#9ca3af", padding: 12, fontSize: 14 }}>Aucun résultat</div>}
         </div>
@@ -342,11 +300,7 @@ function IngredientPicker({ selected, onToggle }) {
               <div style={styles.foodGrid}>
                 {FOOD_DB[cat.key].map((f) => {
                   const active = selected.includes(f.id);
-                  return (
-                    <button key={f.id} style={{ ...styles.foodChip, ...(active ? styles.foodChipActive : {}) }} onClick={() => onToggle(f.id)}>
-                      {active ? "✓ " : ""}{f.name}
-                    </button>
-                  );
+                  return (<button key={f.id} style={{ ...styles.foodChip, ...(active ? styles.foodChipActive : {}) }} onClick={() => onToggle(f.id)}>{active ? "✓ " : ""}{f.name}</button>);
                 })}
               </div>
             )}
@@ -364,15 +318,39 @@ export default function Home() {
   const [profiles, setProfiles] = useState([]);
   const [recipe, setRecipe] = useState([]);
   const [loaded, setLoaded] = useState(false);
+  const [syncing, setSyncing] = useState(true);
 
+  // Real-time listeners — data syncs instantly between devices
   useEffect(() => {
-    setProfiles(loadData("mm_profiles", []));
-    setRecipe(loadData("mm_recipe", []));
-    setLoaded(true);
+    const unsub1 = onSnapshot(PROFILES_DOC, (snap) => {
+      if (snap.exists()) {
+        try { setProfiles(JSON.parse(snap.data().data)); } catch {}
+      }
+      setSyncing(false);
+      setLoaded(true);
+    }, () => { setSyncing(false); setLoaded(true); });
+
+    const unsub2 = onSnapshot(RECIPE_DOC, (snap) => {
+      if (snap.exists()) {
+        try { setRecipe(JSON.parse(snap.data().data)); } catch {}
+      }
+    });
+
+    return () => { unsub1(); unsub2(); };
   }, []);
 
-  useEffect(() => { if (loaded) saveData("mm_profiles", profiles); }, [profiles, loaded]);
-  useEffect(() => { if (loaded) saveData("mm_recipe", recipe); }, [recipe, loaded]);
+  // Save to Firestore on changes (skip initial load)
+  const [initialLoad, setInitialLoad] = useState(true);
+  useEffect(() => {
+    if (!loaded) return;
+    if (initialLoad) { setInitialLoad(false); return; }
+    saveProfiles(profiles);
+  }, [profiles]);
+
+  useEffect(() => {
+    if (!loaded) return;
+    saveRecipe(recipe);
+  }, [recipe]);
 
   const addProfile = () => {
     setProfiles((p) => [...p, {
@@ -384,7 +362,6 @@ export default function Home() {
 
   const updateProfile = (idx, data) => setProfiles((p) => p.map((x, i) => (i === idx ? data : x)));
   const deleteProfile = (idx) => setProfiles((p) => p.filter((_, i) => i !== idx));
-
   const selectedIds = recipe.map((r) => r.id);
 
   const toggleIngredient = (id) => {
@@ -413,32 +390,29 @@ export default function Home() {
     const mealKcal = profile.tdee * mealFraction;
     const mealMacros = { p: profile.macros.protein * mealFraction, g: profile.macros.fat * mealFraction, c: profile.macros.carbs * mealFraction };
     const scale = mealKcal / recipeTotals.kcal;
-
     const items = recipe.map((item) => {
       const food = getFood(item.id);
       const adjQty = Math.round(item.qty * scale);
       const factor = adjQty / 100;
       return { food, baseQty: item.qty, adjQty, kcal: Math.round(food.kcal * factor), p: Math.round(food.p * factor * 10) / 10, g: Math.round(food.g * factor * 10) / 10, c: Math.round(food.c * factor * 10) / 10 };
     });
-
     const totals = items.reduce((a, i) => ({ kcal: a.kcal + i.kcal, p: a.p + i.p, g: a.g + i.g, c: a.c + i.c }), { kcal: 0, p: 0, g: 0, c: 0 });
     return { items, totals, target: { kcal: Math.round(mealKcal), ...mealMacros }, scale };
   };
 
-  if (!loaded) return <div style={styles.container}><div style={{ textAlign: "center", padding: 40, color: "#9ca3af" }}>Chargement…</div></div>;
+  if (!loaded) return <div style={styles.container}><div style={{ textAlign: "center", padding: 40, color: "#9ca3af" }}>Connexion à Firebase…</div></div>;
 
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <h1 style={styles.title}>MacroMeal</h1>
         <p style={styles.subtitle}>Portions ajustées, zéro prise de tête</p>
+        {syncing && <p style={{ fontSize: 11, color: "#d1d5db", marginTop: 4 }}>Synchronisation…</p>}
       </div>
 
       <div style={styles.tabBar}>
         {[{ key: "profiles", label: "👤 Profils" }, { key: "recipe", label: "🍳 Recette" }, { key: "result", label: "📊 Portions" }].map((t) => (
-          <button key={t.key} style={{ ...styles.tab, ...(tab === t.key ? styles.tabActive : {}) }} onClick={() => setTab(t.key)}>
-            {t.label}
-          </button>
+          <button key={t.key} style={{ ...styles.tab, ...(tab === t.key ? styles.tabActive : {}) }} onClick={() => setTab(t.key)}>{t.label}</button>
         ))}
       </div>
 
