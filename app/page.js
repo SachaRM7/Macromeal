@@ -317,6 +317,7 @@ export default function Home() {
   const [tab, setTab] = useState("profiles");
   const [profiles, setProfiles] = useState([]);
   const [recipe, setRecipe] = useState([]);
+  const [recipeServings, setRecipeServings] = useState(4);
   const [loaded, setLoaded] = useState(false);
   const [syncing, setSyncing] = useState(true);
 
@@ -332,7 +333,15 @@ export default function Home() {
 
     const unsub2 = onSnapshot(RECIPE_DOC, (snap) => {
       if (snap.exists()) {
-        try { setRecipe(JSON.parse(snap.data().data)); } catch {}
+        try {
+          const parsed = JSON.parse(snap.data().data);
+          if (Array.isArray(parsed)) {
+            setRecipe(parsed);
+          } else {
+            setRecipe(parsed.items || []);
+            setRecipeServings(parsed.servings || 4);
+          }
+        } catch {}
       }
     });
 
@@ -349,8 +358,8 @@ export default function Home() {
 
   useEffect(() => {
     if (!loaded) return;
-    saveRecipe(recipe);
-  }, [recipe]);
+    saveRecipe({ items: recipe, servings: recipeServings });
+  }, [recipe, recipeServings]);
 
   const addProfile = () => {
     setProfiles((p) => [...p, {
@@ -379,7 +388,7 @@ export default function Home() {
   const recipeTotals = recipe.reduce((acc, item) => {
     const food = getFood(item.id);
     if (!food) return acc;
-    const factor = item.qty / 100;
+    const factor = (item.qty / recipeServings) / 100;
     return { kcal: acc.kcal + food.kcal * factor, p: acc.p + food.p * factor, g: acc.g + food.g * factor, c: acc.c + food.c * factor };
   }, { kcal: 0, p: 0, g: 0, c: 0 });
 
@@ -392,7 +401,7 @@ export default function Home() {
     const scale = mealKcal / recipeTotals.kcal;
     const items = recipe.map((item) => {
       const food = getFood(item.id);
-      const adjQty = Math.round(item.qty * scale);
+      const adjQty = Math.round((item.qty / recipeServings) * scale);
       const factor = adjQty / 100;
       return { food, baseQty: item.qty, adjQty, kcal: Math.round(food.kcal * factor), p: Math.round(food.p * factor * 10) / 10, g: Math.round(food.g * factor * 10) / 10, c: Math.round(food.c * factor * 10) / 10 };
     });
@@ -431,11 +440,21 @@ export default function Home() {
             <h3 style={styles.sectionTitle}>Choisir les ingrédients</h3>
             <IngredientPicker selected={selectedIds} onToggle={toggleIngredient} />
           </div>
+          <div style={styles.card}>
+            <div style={styles.qtyRow}>
+              <span style={{ fontSize: 14, fontWeight: 600 }}>Pour combien de personnes ?</span>
+              <div style={styles.qtyControls}>
+                <button style={styles.qtyBtn} onClick={() => setRecipeServings((s) => Math.max(1, s - 1))}>−</button>
+                <span style={styles.qtyValue}>{recipeServings} pers.</span>
+                <button style={styles.qtyBtn} onClick={() => setRecipeServings((s) => s + 1)}>+</button>
+              </div>
+            </div>
+          </div>
           {recipe.length > 0 && (
             <div style={styles.card}>
-              <h3 style={styles.sectionTitle}>Quantités de base (pour 1 portion)</h3>
+              <h3 style={styles.sectionTitle}>Quantités totales de la recette</h3>
               <p style={{ fontSize: 13, color: "#9ca3af", margin: "0 0 12px" }}>
-                Entre les quantités « normales » de ta recette. L&apos;app ajustera les proportions pour chaque profil.
+                Entre les quantités totales pour {recipeServings} personne{recipeServings > 1 ? "s" : ""}. L&apos;app calculera la portion par personne puis ajustera pour chaque profil.
               </p>
               {recipe.map((item) => {
                 const food = getFood(item.id);
@@ -452,12 +471,21 @@ export default function Home() {
                 );
               })}
               <div style={styles.totalBar}>
-                <span style={{ fontWeight: 700 }}>Total recette de base</span>
+                <span style={{ fontWeight: 700 }}>Total recette ({recipeServings} pers.)</span>
                 <div style={styles.macroRow}>
-                  <span style={styles.totalKcal}>{Math.round(recipeTotals.kcal)} kcal</span>
-                  <MacroPill label="P" value={Math.round(recipeTotals.p)} color="#4ade80" suffix="g" />
-                  <MacroPill label="G" value={Math.round(recipeTotals.g)} color="#facc15" suffix="g" />
-                  <MacroPill label="C" value={Math.round(recipeTotals.c)} color="#60a5fa" suffix="g" />
+                  <span style={styles.totalKcal}>{Math.round(recipeTotals.kcal * recipeServings)} kcal</span>
+                  <MacroPill label="P" value={Math.round(recipeTotals.p * recipeServings)} color="#4ade80" suffix="g" />
+                  <MacroPill label="G" value={Math.round(recipeTotals.g * recipeServings)} color="#facc15" suffix="g" />
+                  <MacroPill label="C" value={Math.round(recipeTotals.c * recipeServings)} color="#60a5fa" suffix="g" />
+                </div>
+                <div style={{ borderTop: "1px solid #e5e7eb", paddingTop: 8, marginTop: 4 }}>
+                  <span style={{ fontWeight: 700, fontSize: 13, color: "#6b7280" }}>Par personne</span>
+                  <div style={styles.macroRow}>
+                    <span style={{ ...styles.totalKcal, fontSize: 13 }}>{Math.round(recipeTotals.kcal)} kcal</span>
+                    <MacroPill label="P" value={Math.round(recipeTotals.p)} color="#4ade80" suffix="g" />
+                    <MacroPill label="G" value={Math.round(recipeTotals.g)} color="#facc15" suffix="g" />
+                    <MacroPill label="C" value={Math.round(recipeTotals.c)} color="#60a5fa" suffix="g" />
+                  </div>
                 </div>
               </div>
             </div>
@@ -486,7 +514,7 @@ export default function Home() {
                       <div style={styles.mealHeader}>
                         <span style={styles.mealIcon}>{meal === "lunch" ? "☀️" : "🌙"}</span>
                         <span style={styles.mealTitle}>{meal === "lunch" ? "Déjeuner" : "Dîner"}</span>
-                        <span style={styles.mealScale}>×{Math.round(result.scale * 100) / 100}</span>
+                        <span style={styles.mealScale}>×{Math.round(result.scale * 100) / 100} vs 1 pers.</span>
                       </div>
                       <div>
                         {result.items.map((item) => (
