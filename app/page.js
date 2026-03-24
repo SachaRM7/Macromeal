@@ -459,14 +459,30 @@ export default function Home() {
               {recipe.map((item) => {
                 const food = getFood(item.id);
                 if (!food) return null;
+                const isDisplayUnit = !!food.displayUnit;
                 return (
                   <div key={item.id} style={styles.qtyRow}>
                     <span style={styles.qtyName}>{food.name}</span>
-                    <div style={styles.qtyControls}>
-                      <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty - food.step * (food.displayPer || 1))}>−</button>
-                      <span style={styles.qtyValue}>{formatQty(food, item.qty)}</span>
-                      <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + food.step * (food.displayPer || 1))}>+</button>
-                    </div>
+                    {isDisplayUnit ? (
+                      <div style={styles.qtyControls}>
+                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty - food.step * (food.displayPer || 1))}>−</button>
+                        <span style={styles.qtyValue}>{formatQty(food, item.qty)}</span>
+                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + food.step * (food.displayPer || 1))}>+</button>
+                      </div>
+                    ) : (
+                      <div style={styles.qtyControls}>
+                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty - food.step)}>−</button>
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          style={styles.qtyInput}
+                          value={item.qty}
+                          onChange={(e) => updateQty(item.id, Math.max(0, parseInt(e.target.value) || 0))}
+                        />
+                        <span style={{ fontSize: 13, color: "#9ca3af" }}>g</span>
+                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + food.step)}>+</button>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -595,6 +611,7 @@ const styles = {
   qtyControls: { display: "flex", alignItems: "center", gap: 8 },
   qtyBtn: { width: 32, height: 32, border: "1.5px solid #e5e7eb", borderRadius: 8, background: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" },
   qtyValue: { minWidth: 90, textAlign: "center", fontSize: 14, fontWeight: 600 },
+  qtyInput: { width: 64, textAlign: "center", fontSize: 15, fontWeight: 600, border: "1.5px solid #e5e7eb", borderRadius: 8, padding: "4px 6px", outline: "none", MozAppearance: "textfield" },
   totalBar: { marginTop: 12, padding: 12, background: "#f9fafb", borderRadius: 10, display: "flex", flexDirection: "column", gap: 6 },
   totalKcal: { fontWeight: 800, fontSize: 15, color: "#b45309" },
   mealBlock: { margin: "12px 0", padding: 12, background: "#fafafa", borderRadius: 12, border: "1px solid #f3f4f6" },
