@@ -120,10 +120,25 @@ function getFood(id) {
 function formatQty(food, grams) {
   if (food.displayUnit && food.displayPer) {
     const count = grams / food.displayPer;
-    if (count < 0.3) return `${Math.round(grams)}g`;
-    return `${Math.round(count * 10) / 10} ${food.displayUnit} (${Math.round(grams)}g)`;
+    if (food.displayUnit === "ml") {
+      if (count < 0.3) return `${Math.round(grams)}g`;
+      return `${Math.round(count * 10) / 10} ml`;
+    }
+    if (food.displayUnit === "œuf(s)") {
+      return `${Math.max(1, Math.round(count))} œuf(s)`;
+    }
+    // c.à.s / c.à.c — arrondi au 0.5 le plus proche
+    const rounded = Math.round(count * 2) / 2;
+    if (rounded < 0.25) return `${Math.round(grams)}g`;
+    return `${rounded} ${food.displayUnit}`;
   }
   return `${Math.round(grams)}g`;
+}
+
+function displayStep(food) {
+  if (!food.displayUnit || food.displayUnit === "ml") return food.step;
+  if (food.displayUnit === "œuf(s)") return food.displayPer; // 1 œuf entier
+  return 0.5 * food.displayPer; // 0.5 c.à.s ou 0.5 c.à.c
 }
 
 // ─── FIRESTORE SYNC ──────────────────────────────────────────────────────────
@@ -378,7 +393,7 @@ export default function Home() {
       setRecipe((r) => r.filter((x) => x.id !== id));
     } else {
       const food = getFood(id);
-      const defaultQty = food.id === "oeuf" ? 120 : food.id.startsWith("huile") ? 14 : 100;
+      const defaultQty = food.displayUnit === "ml" ? 100 : food.displayUnit ? food.displayPer : 100;
       setRecipe((r) => [...r, { id, qty: defaultQty }]);
     }
   };
@@ -465,9 +480,9 @@ export default function Home() {
                     <span style={styles.qtyName}>{food.name}</span>
                     {isDisplayUnit ? (
                       <div style={styles.qtyControls}>
-                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty - food.step * (food.displayPer || 1))}>−</button>
+                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, Math.max(displayStep(food), item.qty - displayStep(food)))}>−</button>
                         <span style={styles.qtyValue}>{formatQty(food, item.qty)}</span>
-                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + food.step * (food.displayPer || 1))}>+</button>
+                        <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + displayStep(food))}>+</button>
                       </div>
                     ) : (
                       <div style={styles.qtyControls}>
