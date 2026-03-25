@@ -19,6 +19,23 @@ const FOOD_DB = {
     { id: "fromage_blanc", name: "Fromage blanc 0%", kcal: 48, p: 8, g: 0.2, c: 3.5, unit: "g", step: 10 },
     { id: "whey", name: "Whey protéine", kcal: 380, p: 78, g: 4, c: 7, unit: "g", step: 5 },
     { id: "tofu", name: "Tofu ferme", kcal: 144, p: 15, g: 9, c: 1.5, unit: "g", step: 10 },
+    { id: "poulet_cuisse", name: "Cuisse de poulet", kcal: 209, p: 26, g: 11, c: 0, unit: "g", step: 10 },
+    { id: "steak_hache", name: "Steak haché 15%", kcal: 250, p: 17, g: 20, c: 0, unit: "g", step: 10 },
+    { id: "porc_filet", name: "Filet de porc", kcal: 143, p: 26, g: 3.5, c: 0, unit: "g", step: 10 },
+    { id: "agneau", name: "Agneau (gigot)", kcal: 234, p: 25, g: 14, c: 0, unit: "g", step: 10 },
+    { id: "cabillaud", name: "Cabillaud", kcal: 82, p: 18, g: 0.7, c: 0, unit: "g", step: 10 },
+    { id: "colin", name: "Colin", kcal: 80, p: 17, g: 1, c: 0, unit: "g", step: 10 },
+    { id: "merlan", name: "Merlan", kcal: 86, p: 18, g: 1.2, c: 0, unit: "g", step: 10 },
+    { id: "truite", name: "Truite", kcal: 141, p: 20, g: 6, c: 0, unit: "g", step: 10 },
+    { id: "jambon_blanc", name: "Jambon blanc", kcal: 107, p: 21, g: 2.5, c: 0.5, unit: "g", step: 10 },
+    { id: "lardons", name: "Lardons fumés", kcal: 260, p: 15, g: 22, c: 0.5, unit: "g", step: 10 },
+    { id: "mozzarella", name: "Mozzarella", kcal: 280, p: 22, g: 20, c: 2.5, unit: "g", step: 10 },
+    { id: "emmental", name: "Emmental râpé", kcal: 380, p: 27, g: 29, c: 1, unit: "g", step: 10 },
+    { id: "parmesan", name: "Parmesan", kcal: 431, p: 38, g: 29, c: 4, unit: "g", step: 10 },
+    { id: "feta", name: "Feta", kcal: 264, p: 14, g: 21, c: 4, unit: "g", step: 10 },
+    { id: "cottage_cheese", name: "Cottage cheese", kcal: 98, p: 11, g: 4.3, c: 3.4, unit: "g", step: 10 },
+    { id: "skyr", name: "Skyr nature", kcal: 63, p: 11, g: 0.2, c: 4, unit: "g", step: 10 },
+    { id: "blanc_oeuf", name: "Blanc d'œuf", kcal: 52, p: 11, g: 0.2, c: 0.7, unit: "g", step: 1, displayUnit: "blanc(s)", displayPer: 33 },
   ],
   feculents: [
     { id: "riz_blanc", name: "Riz blanc (cru)", kcal: 360, p: 7, g: 0.6, c: 79, unit: "g", step: 10 },
@@ -31,6 +48,19 @@ const FOOD_DB = {
     { id: "lentilles", name: "Lentilles (crues)", kcal: 353, p: 25, g: 1, c: 60, unit: "g", step: 10 },
     { id: "pois_chiches", name: "Pois chiches (crus)", kcal: 364, p: 19, g: 6, c: 61, unit: "g", step: 10 },
     { id: "pain_complet", name: "Pain complet", kcal: 247, p: 13, g: 3.4, c: 41, unit: "g", step: 10 },
+    { id: "semoule", name: "Semoule (crue)", kcal: 360, p: 12, g: 1.5, c: 72, unit: "g", step: 10 },
+    { id: "vermicelles_riz", name: "Vermicelles de riz (crus)", kcal: 360, p: 3.4, g: 0.2, c: 83, unit: "g", step: 10 },
+    { id: "gnocchi", name: "Gnocchi", kcal: 170, p: 3.5, g: 0.5, c: 37, unit: "g", step: 10 },
+    { id: "tortilla", name: "Tortilla wrap", kcal: 312, p: 8, g: 8, c: 50, unit: "g", step: 10 },
+    { id: "ble", name: "Blé (type Ebly, cru)", kcal: 340, p: 13, g: 2, c: 68, unit: "g", step: 10 },
+    { id: "haricots_rouges", name: "Haricots rouges (crus)", kcal: 333, p: 22, g: 1.5, c: 60, unit: "g", step: 10 },
+    { id: "flageolets", name: "Flageolets (crus)", kcal: 327, p: 21, g: 1.5, c: 58, unit: "g", step: 10 },
+    { id: "farine_ble", name: "Farine de blé T55", kcal: 340, p: 10, g: 1.2, c: 72, unit: "g", step: 10 },
+    { id: "farine_complete", name: "Farine complète", kcal: 340, p: 12, g: 2, c: 68, unit: "g", step: 10 },
+    { id: "maizena", name: "Maïzena", kcal: 381, p: 0.3, g: 0, c: 91, unit: "g", step: 10 },
+    { id: "chapelure", name: "Chapelure", kcal: 395, p: 13, g: 5, c: 73, unit: "g", step: 10 },
+    { id: "flocons_avoine", name: "Flocons d'avoine", kcal: 367, p: 14, g: 7, c: 58, unit: "g", step: 10 },
+    { id: "pain_mie", name: "Pain de mie", kcal: 274, p: 8, g: 4, c: 50, unit: "g", step: 10 },
   ],
   legumes: [
     { id: "brocolis", name: "Brocolis", kcal: 34, p: 2.8, g: 0.4, c: 7, unit: "g", step: 10 },
@@ -45,6 +75,22 @@ const FOOD_DB = {
     { id: "oignon", name: "Oignon", kcal: 40, p: 1.1, g: 0.1, c: 9, unit: "g", step: 10 },
     { id: "aubergine", name: "Aubergine", kcal: 25, p: 1, g: 0.2, c: 6, unit: "g", step: 10 },
     { id: "salade", name: "Salade verte", kcal: 15, p: 1.4, g: 0.2, c: 2.9, unit: "g", step: 10 },
+    { id: "ail", name: "Ail", kcal: 149, p: 6, g: 0.5, c: 33, unit: "g", step: 1, displayUnit: "gousse(s)", displayPer: 4 },
+    { id: "echalote", name: "Échalote", kcal: 72, p: 2.5, g: 0.1, c: 17, unit: "g", step: 10 },
+    { id: "concombre", name: "Concombre", kcal: 12, p: 0.6, g: 0.1, c: 2.2, unit: "g", step: 10 },
+    { id: "celeri", name: "Céleri branche", kcal: 16, p: 0.7, g: 0.2, c: 3, unit: "g", step: 10 },
+    { id: "petits_pois", name: "Petits pois", kcal: 81, p: 5, g: 0.4, c: 14, unit: "g", step: 10 },
+    { id: "mais", name: "Maïs (conserve)", kcal: 106, p: 3, g: 1.3, c: 22, unit: "g", step: 10 },
+    { id: "poireau", name: "Poireau", kcal: 61, p: 1.5, g: 0.3, c: 14, unit: "g", step: 10 },
+    { id: "fenouil", name: "Fenouil", kcal: 31, p: 1.2, g: 0.2, c: 7, unit: "g", step: 10 },
+    { id: "chou_rouge", name: "Chou rouge", kcal: 31, p: 1.4, g: 0.2, c: 7, unit: "g", step: 10 },
+    { id: "chou_vert", name: "Chou vert", kcal: 25, p: 1.3, g: 0.1, c: 6, unit: "g", step: 10 },
+    { id: "radis", name: "Radis", kcal: 16, p: 0.7, g: 0.1, c: 3.4, unit: "g", step: 10 },
+    { id: "betterave", name: "Betterave cuite", kcal: 44, p: 1.7, g: 0.1, c: 10, unit: "g", step: 10 },
+    { id: "courge_butternut", name: "Butternut", kcal: 45, p: 1, g: 0.1, c: 12, unit: "g", step: 10 },
+    { id: "chou_bruxelles", name: "Choux de Bruxelles", kcal: 43, p: 3.4, g: 0.3, c: 9, unit: "g", step: 10 },
+    { id: "asperges", name: "Asperges", kcal: 20, p: 2.2, g: 0.1, c: 3.9, unit: "g", step: 10 },
+    { id: "tomates_cerises", name: "Tomates cerises", kcal: 18, p: 0.9, g: 0.2, c: 3.9, unit: "g", step: 10 },
   ],
   matieres_grasses: [
     { id: "huile_olive", name: "Huile d'olive", kcal: 884, p: 0, g: 100, c: 0, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 14 },
@@ -55,6 +101,16 @@ const FOOD_DB = {
     { id: "noix", name: "Noix", kcal: 654, p: 15, g: 65, c: 14, unit: "g", step: 5 },
     { id: "beurre_cacahuete", name: "Beurre de cacahuète", kcal: 588, p: 25, g: 50, c: 20, unit: "g", step: 5 },
     { id: "graines_lin", name: "Graines de lin", kcal: 534, p: 18, g: 42, c: 29, unit: "g", step: 5 },
+    { id: "huile_sesame", name: "Huile de sésame", kcal: 884, p: 0, g: 100, c: 0, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 14 },
+    { id: "huile_tournesol", name: "Huile de tournesol", kcal: 884, p: 0, g: 100, c: 0, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 14 },
+    { id: "creme_coco", name: "Crème de coco", kcal: 330, p: 3, g: 35, c: 2, unit: "g", step: 10 },
+    { id: "graines_courge", name: "Graines de courge", kcal: 559, p: 30, g: 49, c: 5, unit: "g", step: 5 },
+    { id: "graines_tournesol", name: "Graines de tournesol", kcal: 584, p: 21, g: 51, c: 20, unit: "g", step: 5 },
+    { id: "graines_chia", name: "Graines de chia", kcal: 486, p: 17, g: 31, c: 42, unit: "g", step: 5 },
+    { id: "noisettes", name: "Noisettes", kcal: 628, p: 15, g: 61, c: 17, unit: "g", step: 5 },
+    { id: "noix_cajou", name: "Noix de cajou", kcal: 553, p: 18, g: 44, c: 30, unit: "g", step: 5 },
+    { id: "pistaches", name: "Pistaches", kcal: 560, p: 20, g: 45, c: 28, unit: "g", step: 5 },
+    { id: "tahini", name: "Tahini (purée sésame)", kcal: 595, p: 17, g: 54, c: 21, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
   ],
   sauces_condiments: [
     { id: "sauce_soja", name: "Sauce soja", kcal: 53, p: 5, g: 0, c: 5, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
@@ -63,14 +119,38 @@ const FOOD_DB = {
     { id: "miel", name: "Miel", kcal: 304, p: 0.3, g: 0, c: 82, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 7 },
     { id: "creme_fraiche", name: "Crème fraîche 15%", kcal: 162, p: 2.5, g: 15, c: 3.6, unit: "g", step: 5 },
     { id: "lait_coco", name: "Lait de coco", kcal: 230, p: 2.3, g: 24, c: 3.3, unit: "g", step: 10, displayUnit: "ml", displayPer: 1 },
+    { id: "concentre_tomate", name: "Concentré de tomate", kcal: 82, p: 4, g: 0.5, c: 17, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
+    { id: "sauce_tomate", name: "Sauce tomate (coulis)", kcal: 30, p: 1.2, g: 0.1, c: 6, unit: "g", step: 10 },
+    { id: "sauce_huitre", name: "Sauce huître", kcal: 51, p: 1, g: 0, c: 11, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
+    { id: "sauce_sriracha", name: "Sriracha", kcal: 93, p: 2, g: 1, c: 19, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 5 },
+    { id: "nuoc_mam", name: "Nuoc-mâm", kcal: 35, p: 5, g: 0, c: 3.6, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
+    { id: "curry_poudre", name: "Curry en poudre", kcal: 325, p: 14, g: 14, c: 42, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 3 },
+    { id: "cumin", name: "Cumin moulu", kcal: 375, p: 18, g: 22, c: 44, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 3 },
+    { id: "paprika", name: "Paprika", kcal: 282, p: 14, g: 13, c: 34, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 3 },
+    { id: "curcuma", name: "Curcuma", kcal: 354, p: 8, g: 10, c: 65, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 3 },
+    { id: "herbes_provence", name: "Herbes de Provence", kcal: 269, p: 9, g: 7, c: 43, unit: "g", step: 1, displayUnit: "c.à.c", displayPer: 2 },
+    { id: "bouillon_cube", name: "Bouillon cube", kcal: 220, p: 15, g: 10, c: 18, unit: "g", step: 1, displayUnit: "cube(s)", displayPer: 10 },
+    { id: "creme_soja", name: "Crème de soja", kcal: 120, p: 3, g: 8, c: 8, unit: "g", step: 10 },
+    { id: "lait", name: "Lait demi-écrémé", kcal: 46, p: 3.2, g: 1.6, c: 4.8, unit: "g", step: 10, displayUnit: "ml", displayPer: 1 },
+    { id: "sucre", name: "Sucre", kcal: 400, p: 0, g: 0, c: 100, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 12 },
+    { id: "sirop_erable", name: "Sirop d'érable", kcal: 260, p: 0, g: 0, c: 67, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
+    { id: "pesto", name: "Pesto", kcal: 387, p: 5, g: 37, c: 8, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
+    { id: "ketchup", name: "Ketchup", kcal: 112, p: 1, g: 0.1, c: 27, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
+    { id: "mayo", name: "Mayonnaise", kcal: 680, p: 1, g: 75, c: 1, unit: "g", step: 1, displayUnit: "c.à.s", displayPer: 15 },
   ],
 };
 
 // Coefficient cru→cuit (poids multiplié par ce facteur)
 const COOKED_RATIO = {
+  // Féculents
   riz_blanc: 2.5, riz_complet: 2.5, pates: 2.2, quinoa: 2.5, boulgour: 2.5,
-  lentilles: 2.5, pois_chiches: 2.5,
+  lentilles: 2.5, pois_chiches: 2.5, semoule: 2.5, vermicelles_riz: 2.2,
+  ble: 2.5, haricots_rouges: 2.5, flageolets: 2.5,
+  // Protéines
   poulet: 0.75, dinde: 0.75, boeuf5: 0.70, saumon: 0.80, tofu: 0.90,
+  poulet_cuisse: 0.75, steak_hache: 0.70, porc_filet: 0.75, agneau: 0.75,
+  cabillaud: 0.80, colin: 0.80, merlan: 0.80, truite: 0.80,
+  // Tubercules
   patate_douce: 0.85, pomme_terre: 0.85,
 };
 
@@ -573,8 +653,6 @@ export default function Home() {
                     let qtyLabel;
                     if (food.displayUnit) {
                       qtyLabel = formatQty(food, rawTotal);
-                    } else if (ratio) {
-                      qtyLabel = `${rawTotal}g cru (≈\u00a0${Math.round(rawTotal * ratio)}g cuit)`;
                     } else {
                       qtyLabel = `${rawTotal}g`;
                     }
@@ -617,7 +695,7 @@ export default function Home() {
                                 if (item.food.displayUnit) {
                                   qtyLabel = formatQty(item.food, item.adjQty);
                                 } else if (ratio) {
-                                  qtyLabel = `${Math.round(item.adjQty * ratio)}g cuit`;
+                                  qtyLabel = `≈\u00a0${Math.round(item.adjQty * ratio)}g cuit`;
                                 } else {
                                   qtyLabel = `${Math.round(item.adjQty)}g`;
                                 }
