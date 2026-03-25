@@ -66,6 +66,14 @@ const FOOD_DB = {
   ],
 };
 
+// Coefficient cru→cuit (poids multiplié par ce facteur)
+const COOKED_RATIO = {
+  riz_blanc: 2.5, riz_complet: 2.5, pates: 2.2, quinoa: 2.5, boulgour: 2.5,
+  lentilles: 2.5, pois_chiches: 2.5,
+  poulet: 0.75, dinde: 0.75, boeuf5: 0.70, saumon: 0.80, tofu: 0.90,
+  patate_douce: 0.85, pomme_terre: 0.85,
+};
+
 const CATEGORIES = [
   { key: "proteines", label: "Protéines", icon: "🥩" },
   { key: "feculents", label: "Féculents", icon: "🍚" },
@@ -133,6 +141,13 @@ function formatQty(food, grams) {
     return `${rounded} ${food.displayUnit}`;
   }
   return `${Math.round(grams)}g`;
+}
+
+function practicalRound(qty) {
+  if (qty <= 0) return 0;
+  if (qty < 20) return Math.round(qty / 5) * 5 || 5;
+  if (qty < 200) return Math.round(qty / 10) * 10;
+  return Math.round(qty / 25) * 25;
 }
 
 function displayStep(food) {
@@ -529,54 +544,115 @@ export default function Home() {
         <div>
           {profiles.length === 0 && <div style={styles.emptyState}><p>Ajoute d&apos;abord des profils dans l&apos;onglet 👤 Profils</p></div>}
           {recipe.length === 0 && <div style={styles.emptyState}><p>Compose ta recette dans l&apos;onglet 🍳 Recette</p></div>}
-          {profiles.length > 0 && recipe.length > 0 && profiles.map((profile) => {
-            if (!profile.tdee) return null;
+          {profiles.length > 0 && recipe.length > 0 && recipeTotals.kcal > 0 && (() => {
+            const allPortions = profiles.flatMap((profile) =>
+              ["lunch", "dinner"].map((meal) => ({ profile, meal, result: getScaledRecipe(profile, meal) }))
+            ).filter((x) => x.result);
+            if (allPortions.length === 0) return null;
+
+            // Somme de toutes les portions par ingrédient
+            const totalByIngredient = {};
+            allPortions.forEach(({ result }) => {
+              result.items.forEach((item) => {
+                totalByIngredient[item.food.id] = (totalByIngredient[item.food.id] || 0) + item.adjQty;
+              });
+            });
+            const recipeIngredients = recipe.map((r) => getFood(r.id)).filter(Boolean);
+
             return (
-              <div key={profile.id} style={styles.card}>
-                <div style={styles.cardHeader}>
-                  <span style={styles.cardIcon}>{profile.sex === "M" ? "👨" : "👩"}</span>
-                  <span style={styles.profileName}>{profile.name || "Sans nom"}</span>
-                  <span style={{ fontSize: 13, color: "#9ca3af", marginLeft: 8 }}>{profile.tdee} kcal/jour</span>
+              <>
+                {/* ── TOTAL À CUISINER ── */}
+                <div style={styles.card}>
+                  <h3 style={styles.sectionTitle}>🍳 Quantités totales à cuisiner</h3>
+                  <p style={{ fontSize: 13, color: "#9ca3af", margin: "0 0 12px" }}>
+                    Ce que vous mettez dans la casserole pour tout le monde ({profiles.length} profil{profiles.length > 1 ? "s" : ""} × déj + dîner)
+                  </p>
+                  {recipeIngredients.map((food) => {
+                    const rawTotal = practicalRound(totalByIngredient[food.id] || 0);
+                    const ratio = COOKED_RATIO[food.id];
+                    let qtyLabel;
+                    if (food.displayUnit) {
+                      qtyLabel = formatQty(food, rawTotal);
+                    } else if (ratio) {
+                      qtyLabel = `${rawTotal}g cru (≈\u00a0${Math.round(rawTotal * ratio)}g cuit)`;
+                    } else {
+                      qtyLabel = `${rawTotal}g`;
+                    }
+                    return (
+                      <div key={food.id} style={styles.portionRow}>
+                        <span style={styles.portionName}>{food.name}</span>
+                        <span style={{ ...styles.portionQty, fontSize: 13 }}>{qtyLabel}</span>
+                      </div>
+                    );
+                  })}
                 </div>
-                {["lunch", "dinner"].map((meal) => {
-                  const result = getScaledRecipe(profile, meal);
-                  if (!result) return null;
+
+                {/* ── RÉPARTITION PAR PROFIL ── */}
+                <div style={{ margin: "4px 12px 8px", fontSize: 13, fontWeight: 700, color: "#6b7280", textTransform: "uppercase", letterSpacing: 0.5 }}>
+                  Répartition des portions
+                </div>
+                {profiles.map((profile) => {
+                  if (!profile.tdee) return null;
                   return (
-                    <div key={meal} style={styles.mealBlock}>
-                      <div style={styles.mealHeader}>
-                        <span style={styles.mealIcon}>{meal === "lunch" ? "☀️" : "🌙"}</span>
-                        <span style={styles.mealTitle}>{meal === "lunch" ? "Déjeuner" : "Dîner"}</span>
-                        <span style={styles.mealScale}>×{Math.round(result.scale * 100) / 100} vs 1 pers.</span>
+                    <div key={profile.id} style={styles.card}>
+                      <div style={styles.cardHeader}>
+                        <span style={styles.cardIcon}>{profile.sex === "M" ? "👨" : "👩"}</span>
+                        <span style={styles.profileName}>{profile.name || "Sans nom"}</span>
+                        <span style={{ fontSize: 13, color: "#9ca3af", marginLeft: 8 }}>{profile.tdee} kcal/jour</span>
                       </div>
-                      <div>
-                        {result.items.map((item) => (
-                          <div key={item.food.id} style={styles.portionRow}>
-                            <span style={styles.portionName}>{item.food.name}</span>
-                            <span style={styles.portionQty}>{formatQty(item.food, item.adjQty)}</span>
+                      {["lunch", "dinner"].map((meal) => {
+                        const result = getScaledRecipe(profile, meal);
+                        if (!result) return null;
+                        return (
+                          <div key={meal} style={styles.mealBlock}>
+                            <div style={styles.mealHeader}>
+                              <span style={styles.mealIcon}>{meal === "lunch" ? "☀️" : "🌙"}</span>
+                              <span style={styles.mealTitle}>{meal === "lunch" ? "Déjeuner" : "Dîner"}</span>
+                              <span style={styles.mealScale}>×{Math.round(result.scale * 100) / 100} vs base</span>
+                            </div>
+                            <div>
+                              {result.items.map((item) => {
+                                const ratio = COOKED_RATIO[item.food.id];
+                                let qtyLabel;
+                                if (item.food.displayUnit) {
+                                  qtyLabel = formatQty(item.food, item.adjQty);
+                                } else if (ratio) {
+                                  qtyLabel = `${Math.round(item.adjQty * ratio)}g cuit`;
+                                } else {
+                                  qtyLabel = `${Math.round(item.adjQty)}g`;
+                                }
+                                return (
+                                  <div key={item.food.id} style={styles.portionRow}>
+                                    <span style={styles.portionName}>{item.food.name}</span>
+                                    <span style={styles.portionQty}>{qtyLabel}</span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                            <div style={styles.mealTotals}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
+                                <span style={{ fontWeight: 700, fontSize: 15 }}>{Math.round(result.totals.kcal)} kcal</span>
+                                <div style={{ display: "flex", gap: 6 }}>
+                                  <MacroPill label="P" value={Math.round(result.totals.p)} color="#4ade80" suffix="g" />
+                                  <MacroPill label="G" value={Math.round(result.totals.g)} color="#facc15" suffix="g" />
+                                  <MacroPill label="C" value={Math.round(result.totals.c)} color="#60a5fa" suffix="g" />
+                                </div>
+                              </div>
+                              <div style={{ marginTop: 4 }}>
+                                <span style={{ color: "#6b7280", fontSize: 12 }}>
+                                  Cible : {Math.round(result.target.kcal)} kcal · P {Math.round(result.target.p)}g · G {Math.round(result.target.g)}g · C {Math.round(result.target.c)}g
+                                </span>
+                              </div>
+                            </div>
                           </div>
-                        ))}
-                      </div>
-                      <div style={styles.mealTotals}>
-                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 6 }}>
-                          <span style={{ fontWeight: 700, fontSize: 15 }}>{Math.round(result.totals.kcal)} kcal</span>
-                          <div style={{ display: "flex", gap: 6 }}>
-                            <MacroPill label="P" value={Math.round(result.totals.p)} color="#4ade80" suffix="g" />
-                            <MacroPill label="G" value={Math.round(result.totals.g)} color="#facc15" suffix="g" />
-                            <MacroPill label="C" value={Math.round(result.totals.c)} color="#60a5fa" suffix="g" />
-                          </div>
-                        </div>
-                        <div style={{ marginTop: 4 }}>
-                          <span style={{ color: "#6b7280", fontSize: 12 }}>
-                            Cible : {Math.round(result.target.kcal)} kcal · P {Math.round(result.target.p)}g · G {Math.round(result.target.g)}g · C {Math.round(result.target.c)}g
-                          </span>
-                        </div>
-                      </div>
+                        );
+                      })}
                     </div>
                   );
                 })}
-              </div>
+              </>
             );
-          })}
+          })()}
         </div>
       )}
     </div>
