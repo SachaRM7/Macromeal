@@ -64,30 +64,30 @@ const FOOD_DB = {
   ],
   legumes: [
     { id: "brocolis", name: "Brocolis", kcal: 34, p: 2.8, g: 0.4, c: 7, unit: "g", step: 10 },
-    { id: "courgette", name: "Courgette", kcal: 17, p: 1.2, g: 0.3, c: 3.1, unit: "g", step: 10 },
+    { id: "courgette", name: "Courgette", kcal: 17, p: 1.2, g: 0.3, c: 3.1, unit: "g", step: 10, displayUnit: "courgette(s)", displayPer: 250, toggleable: true },
     { id: "epinards", name: "Épinards", kcal: 23, p: 2.9, g: 0.4, c: 3.6, unit: "g", step: 10 },
     { id: "haricots_verts", name: "Haricots verts", kcal: 31, p: 1.8, g: 0.1, c: 7, unit: "g", step: 10 },
     { id: "chou_fleur", name: "Chou-fleur", kcal: 25, p: 1.9, g: 0.3, c: 5, unit: "g", step: 10 },
-    { id: "carottes", name: "Carottes", kcal: 41, p: 0.9, g: 0.2, c: 10, unit: "g", step: 10 },
-    { id: "poivron", name: "Poivron", kcal: 31, p: 1, g: 0.3, c: 6, unit: "g", step: 10 },
-    { id: "tomate", name: "Tomate", kcal: 18, p: 0.9, g: 0.2, c: 3.9, unit: "g", step: 10 },
+    { id: "carottes", name: "Carottes", kcal: 41, p: 0.9, g: 0.2, c: 10, unit: "g", step: 10, displayUnit: "carotte(s)", displayPer: 100, toggleable: true },
+    { id: "poivron", name: "Poivron", kcal: 31, p: 1, g: 0.3, c: 6, unit: "g", step: 10, displayUnit: "poivron(s)", displayPer: 150, toggleable: true },
+    { id: "tomate", name: "Tomate", kcal: 18, p: 0.9, g: 0.2, c: 3.9, unit: "g", step: 10, displayUnit: "tomate(s)", displayPer: 120, toggleable: true },
     { id: "champignons", name: "Champignons", kcal: 22, p: 3.1, g: 0.3, c: 3.3, unit: "g", step: 10 },
-    { id: "oignon", name: "Oignon", kcal: 40, p: 1.1, g: 0.1, c: 9, unit: "g", step: 10 },
-    { id: "aubergine", name: "Aubergine", kcal: 25, p: 1, g: 0.2, c: 6, unit: "g", step: 10 },
+    { id: "oignon", name: "Oignon", kcal: 40, p: 1.1, g: 0.1, c: 9, unit: "g", step: 10, displayUnit: "oignon(s)", displayPer: 150, toggleable: true },
+    { id: "aubergine", name: "Aubergine", kcal: 25, p: 1, g: 0.2, c: 6, unit: "g", step: 10, displayUnit: "aubergine(s)", displayPer: 300, toggleable: true },
     { id: "salade", name: "Salade verte", kcal: 15, p: 1.4, g: 0.2, c: 2.9, unit: "g", step: 10 },
     { id: "ail", name: "Ail", kcal: 149, p: 6, g: 0.5, c: 33, unit: "g", step: 1, displayUnit: "gousse(s)", displayPer: 4 },
-    { id: "echalote", name: "Échalote", kcal: 72, p: 2.5, g: 0.1, c: 17, unit: "g", step: 10 },
-    { id: "concombre", name: "Concombre", kcal: 12, p: 0.6, g: 0.1, c: 2.2, unit: "g", step: 10 },
+    { id: "echalote", name: "Échalote", kcal: 72, p: 2.5, g: 0.1, c: 17, unit: "g", step: 10, displayUnit: "échalote(s)", displayPer: 40, toggleable: true },
+    { id: "concombre", name: "Concombre", kcal: 12, p: 0.6, g: 0.1, c: 2.2, unit: "g", step: 10, displayUnit: "concombre(s)", displayPer: 300, toggleable: true },
     { id: "celeri", name: "Céleri branche", kcal: 16, p: 0.7, g: 0.2, c: 3, unit: "g", step: 10 },
     { id: "petits_pois", name: "Petits pois", kcal: 81, p: 5, g: 0.4, c: 14, unit: "g", step: 10 },
     { id: "mais", name: "Maïs (conserve)", kcal: 106, p: 3, g: 1.3, c: 22, unit: "g", step: 10 },
-    { id: "poireau", name: "Poireau", kcal: 61, p: 1.5, g: 0.3, c: 14, unit: "g", step: 10 },
-    { id: "fenouil", name: "Fenouil", kcal: 31, p: 1.2, g: 0.2, c: 7, unit: "g", step: 10 },
+    { id: "poireau", name: "Poireau", kcal: 61, p: 1.5, g: 0.3, c: 14, unit: "g", step: 10, displayUnit: "poireau(x)", displayPer: 200, toggleable: true },
+    { id: "fenouil", name: "Fenouil", kcal: 31, p: 1.2, g: 0.2, c: 7, unit: "g", step: 10, displayUnit: "fenouil(s)", displayPer: 250, toggleable: true },
     { id: "chou_rouge", name: "Chou rouge", kcal: 31, p: 1.4, g: 0.2, c: 7, unit: "g", step: 10 },
     { id: "chou_vert", name: "Chou vert", kcal: 25, p: 1.3, g: 0.1, c: 6, unit: "g", step: 10 },
     { id: "radis", name: "Radis", kcal: 16, p: 0.7, g: 0.1, c: 3.4, unit: "g", step: 10 },
-    { id: "betterave", name: "Betterave cuite", kcal: 44, p: 1.7, g: 0.1, c: 10, unit: "g", step: 10 },
-    { id: "courge_butternut", name: "Butternut", kcal: 45, p: 1, g: 0.1, c: 12, unit: "g", step: 10 },
+    { id: "betterave", name: "Betterave cuite", kcal: 44, p: 1.7, g: 0.1, c: 10, unit: "g", step: 10, displayUnit: "betterave(s)", displayPer: 150, toggleable: true },
+    { id: "courge_butternut", name: "Butternut", kcal: 45, p: 1, g: 0.1, c: 12, unit: "g", step: 10, displayUnit: "butternut(s)", displayPer: 800, toggleable: true },
     { id: "chou_bruxelles", name: "Choux de Bruxelles", kcal: 43, p: 3.4, g: 0.3, c: 9, unit: "g", step: 10 },
     { id: "asperges", name: "Asperges", kcal: 20, p: 2.2, g: 0.1, c: 3.9, unit: "g", step: 10 },
     { id: "tomates_cerises", name: "Tomates cerises", kcal: 18, p: 0.9, g: 0.2, c: 3.9, unit: "g", step: 10 },
@@ -489,11 +489,14 @@ export default function Home() {
     } else {
       const food = getFood(id);
       const defaultQty = food.displayUnit === "ml" ? 100 : food.displayUnit ? food.displayPer : 100;
-      setRecipe((r) => [...r, { id, qty: defaultQty }]);
+      const item = { id, qty: defaultQty };
+      if (food.toggleable) item.inputMode = "unit";
+      setRecipe((r) => [...r, item]);
     }
   };
 
   const updateQty = (id, qty) => setRecipe((r) => r.map((x) => (x.id === id ? { ...x, qty: Math.max(0, qty) } : x)));
+  const toggleItemInputMode = (id) => setRecipe((r) => r.map((x) => x.id === id ? { ...x, inputMode: x.inputMode === "grams" ? "unit" : "grams" } : x));
 
   const recipeTotals = recipe.reduce((acc, item) => {
     const food = getFood(item.id);
@@ -569,14 +572,19 @@ export default function Home() {
               {recipe.map((item) => {
                 const food = getFood(item.id);
                 if (!food) return null;
-                const isDisplayUnit = !!food.displayUnit;
+                // Mode saisie : toggleable = peut switcher unité ↔ grammes
+                const inUnitMode = food.toggleable ? item.inputMode !== "grams" : !!food.displayUnit;
                 return (
                   <div key={item.id} style={styles.qtyRow}>
                     <span style={styles.qtyName}>{food.name}</span>
-                    {isDisplayUnit ? (
+                    {inUnitMode ? (
                       <div style={styles.qtyControls}>
                         <button style={styles.qtyBtn} onClick={() => updateQty(item.id, Math.max(displayStep(food), item.qty - displayStep(food)))}>−</button>
-                        <span style={styles.qtyValue}>{formatQty(food, item.qty)}</span>
+                        <span style={{ ...styles.qtyValue, minWidth: food.toggleable ? 110 : 90 }}>
+                          {food.toggleable
+                            ? `${Math.round((item.qty / food.displayPer) * 2) / 2} ${food.displayUnit} (${Math.round(item.qty)}g)`
+                            : formatQty(food, item.qty)}
+                        </span>
                         <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + displayStep(food))}>+</button>
                       </div>
                     ) : (
@@ -592,6 +600,11 @@ export default function Home() {
                         <span style={{ fontSize: 13, color: "#9ca3af" }}>g</span>
                         <button style={styles.qtyBtn} onClick={() => updateQty(item.id, item.qty + food.step)}>+</button>
                       </div>
+                    )}
+                    {food.toggleable && (
+                      <button style={styles.qtyToggleBtn} onClick={() => toggleItemInputMode(item.id)}>
+                        {item.inputMode === "grams" ? "unité" : "g"}
+                      </button>
                     )}
                     <button style={styles.qtyDeleteBtn} onClick={() => toggleIngredient(item.id)}>×</button>
                   </div>
@@ -782,6 +795,7 @@ const styles = {
   qtyBtn: { width: 32, height: 32, border: "1.5px solid #e5e7eb", borderRadius: 8, background: "#fff", fontSize: 18, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" },
   qtyValue: { minWidth: 90, textAlign: "center", fontSize: 14, fontWeight: 600 },
   qtyInput: { width: 64, textAlign: "center", fontSize: 15, fontWeight: 600, border: "1.5px solid #e5e7eb", borderRadius: 8, padding: "4px 6px", outline: "none", MozAppearance: "textfield" },
+  qtyToggleBtn: { marginLeft: 6, padding: "0 7px", height: 26, border: "1.5px solid #d1d5db", borderRadius: 6, background: "#f3f4f6", color: "#6b7280", fontSize: 11, fontWeight: 700, cursor: "pointer", flexShrink: 0 },
   qtyDeleteBtn: { marginLeft: 6, width: 26, height: 26, border: "1.5px solid #fca5a5", borderRadius: 6, background: "#fff5f5", color: "#ef4444", fontSize: 16, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", lineHeight: 1, flexShrink: 0 },
   totalBar: { marginTop: 12, padding: 12, background: "#f9fafb", borderRadius: 10, display: "flex", flexDirection: "column", gap: 6 },
   totalKcal: { fontWeight: 800, fontSize: 15, color: "#b45309" },
